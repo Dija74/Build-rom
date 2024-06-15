@@ -49,7 +49,7 @@ jobs:
     - name: Sync repo
       working-directory: android
       run: |
-        repo sync --current-branch --no-tags --no-clone-bundle --optimized-fetch --force-broken --force-sync -j8
+        repo sync --current-branch --no-tags --no-clone-bundle --optimized-fetch --force-sync -j8
 
     - name: Clone device tree
       run: |
