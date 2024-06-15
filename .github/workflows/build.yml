@@ -22,7 +22,13 @@ jobs:
       run: |
         sudo dpkg --add-architecture i386
         sudo apt-get update
-        sudo apt-get install -y openjdk-8-jdk python3 repo git-core lib32z1-dev lib32ncurses5-dev libbz2-dev lib32stdc++6 libssl-dev curl zlib1g-dev build-essential
+        sudo apt-get install -y openjdk-8-jdk python3 curl git-core lib32z1-dev lib32ncurses5-dev libbz2-dev lib32stdc++6 libssl-dev zlib1g-dev build-essential
+        
+    - name: Install repo tool
+      run: |
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/repo
+        chmod a+x ~/repo
+        sudo mv ~/repo /usr/local/bin/repo
         
     - name: Set up Git
       run: |
@@ -38,7 +44,7 @@ jobs:
     - name: Initialize repo
       working-directory: android
       run: |
-        repo init -u https://github.com/ancient-rom/android_manifest.git -b main
+        repo init -u https://github.com/ancient-rom/android_manifest.git -b master
 
     - name: Sync repo
       working-directory: android
