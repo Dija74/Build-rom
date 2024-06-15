@@ -44,7 +44,7 @@ jobs:
     - name: Initialize repo
       working-directory: android
       run: |
-        repo init --depth=1 -u git://github.com/ancient-rom/android_manifest.git -b pie
+        repo init --depth=1 -u https://github.com/ancient-rom/android_manifest.git -b pie
 
     - name: Sync repo
       working-directory: android
@@ -61,7 +61,7 @@ jobs:
 
     - name: Clone kernel tree
       run: |
-        git clone https://github.com/whatawurst/android_kernel_sony_msm8998.git android/kernel/sony/msm8998
+        git clone --branch lineage-16.1 https://github.com/whatawurst/android_kernel_sony_msm8998.git android/kernel/sony/msm8998
 
     - name: Set up CCACHE
       run: |
