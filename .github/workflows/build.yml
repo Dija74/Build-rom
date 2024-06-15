@@ -44,12 +44,12 @@ jobs:
     - name: Initialize repo
       working-directory: android
       run: |
-        repo init -u https://github.com/ancient-rom/android_manifest.git -b master
+        repo init --depth=1 -u git://github.com/ancient-rom/android_manifest.git -b pie
 
     - name: Sync repo
       working-directory: android
       run: |
-        repo sync -c -j8 --force-sync --no-clone-bundle --no-tags
+        repo sync --current-branch --no-tags --no-clone-bundle --optimized-fetch --force-broken --force-sync -j8
 
     - name: Clone device tree
       run: |
@@ -72,7 +72,7 @@ jobs:
       run: |
         source build/envsetup.sh
         lunch ancient_poplar-userdebug
-        make bacon -j$(nproc --all)
+        mka bacon -j$(nproc --all)
 
     - name: Upload ROM
       uses: actions/upload-artifact@v2
