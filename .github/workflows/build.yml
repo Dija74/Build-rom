@@ -1,4 +1,4 @@
-name: Build Ancient OS
+name: Build Custom ROM
 
 on:
   push:
@@ -7,75 +7,63 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      TZ: Asia/Jakarta  # Set the timezone
-      USE_CCACHE: 1
-      CCACHE_SIZE: 50G
+      THREADS: $(nproc --all)
 
     steps:
     - name: Set up environment
       run: |
-        sudo dpkg --add-architecture i386
         sudo apt-get update
-        sudo apt-get install -y openjdk-8-jdk python3 curl git-core lib32z1-dev lib32ncurses5-dev libbz2-dev lib32stdc++6 libssl-dev zlib1g-dev build-essential
+        sudo apt-get install -y openjdk-8-jdk python3 python3-venv git-core gnupg flex bison gperf build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig
         
-    - name: Install repo tool
-      run: |
-        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/repo
-        chmod a+x ~/repo
-        sudo mv ~/repo /usr/local/bin/repo
-        
-    - name: Set up Git
-      run: |
-        git config --global user.name "Your Name"
-        git config --global user.email "your-email@example.com"
-        
-    - name: Check out Ancient OS manifest
+    - name: Check out repository
       uses: actions/checkout@v2
       with:
-        repository: ancient-rom/android_manifest
-        path: android
+        fetch-depth: 1
 
-    - name: Initialize repo
-      working-directory: android
+    - name: Initialize ROM manifest
       run: |
-        repo init --depth=1 -u https://github.com/ancient-rom/android_manifest.git -b pie
+        mkdir -p ~/rom
+        cd ~/rom
+        repo init -u git://github.com/Just-CAF/platform_manifest.git -b r
 
-    - name: Sync repo
-      working-directory: android
+    - name: Sync ROM source
       run: |
-        repo sync --current-branch --no-tags --no-clone-bundle --optimized-fetch --force-sync -j16
+        cd ~/rom
+        repo sync -c --no-tags --no-clone-bundle -j${{ env.THREADS }}
 
-    - name: Clone device tree
+    - name: Clone Device Tree
       run: |
-        git clone https://github.com/RinKirito/device_sony_poplar.git android/device/sony/poplar
+        cd ~/rom
+        git clone -b lineage-17.1 https://github.com/whatawurst/android_device_sony_poplar.git device/sony/poplar
 
-    - name: Clone vendor tree
+    - name: Clone Vendor Tree
       run: |
-        git clone https://github.com/AndroidBlobs/vendor_sony_poplar_dsds.git android/vendor/sony/poplar_dsds
+        cd ~/rom
+        git clone -b lineage-17.1 https://github.com/whatawurst/android_vendor_sony_poplar.git vendor/sony/poplar
 
-    - name: Clone kernel tree
+    - name: Clone Kernel Tree
       run: |
-        git clone --branch lineage-16.1 https://github.com/whatawurst/android_kernel_sony_msm8998.git android/kernel/sony/msm8998
+        cd ~/rom
+        git clone -b lineage-17.1 https://github.com/whatawurst/android_kernel_sony_msm8998.git kernel/sony/msm8998
 
-    - name: Set up CCACHE
+    - name: Set up build environment
       run: |
-        ccache -M 50G
+        cd ~/rom
+        source build/envsetup.sh
+        lunch lineage_poplar-userdebug
 
     - name: Build ROM
-      working-directory: android
       run: |
-        source build/envsetup.sh
-        lunch ancient_poplar-userdebug
-        mka bacon -j$(nproc --all)
+        cd ~/rom
+        make bacon -j${{ env.THREADS }}
 
     - name: Upload ROM
       uses: actions/upload-artifact@v2
       with:
-        name: AncientOS
-        path: android/out/target/product/poplar/*.zip
+        name: ROM
+        path: ~/rom/out/target/product/poplar/*.zip
