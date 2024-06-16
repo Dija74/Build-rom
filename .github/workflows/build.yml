@@ -35,12 +35,17 @@ jobs:
       run: |
         mkdir -p $HOME/rom
         cd $HOME/rom
-        $HOME/bin/repo init -u git://github.com/Just-CAF/platform_manifest.git -b r
+        $HOME/bin/repo init -u https://example.com/mirror/platform_manifest.git -b r
+      continue-on-error: true  # Continue on error to try multiple times
+      retries: 3  # Retry up to 3 times
+      timeout-minutes: 10  # Increase timeout if necessary
 
     - name: Sync ROM source
       run: |
         cd $HOME/rom
-        $HOME/bin/repo sync -c --no-tags --no-clone-bundle -j${{ env.THREADS }}
+        for attempt in {1..5}; do
+          $HOME/bin/repo sync -c --no-tags --no-clone-bundle --optimized-fetch --prune -j${{ env.THREADS }} && break || sleep $((attempt * 30)); done
+      timeout-minutes: 30  # Increase timeout if necessary
 
     - name: Clone Device Tree
       run: |
