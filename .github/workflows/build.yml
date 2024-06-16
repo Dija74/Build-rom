@@ -32,6 +32,7 @@ jobs:
         chmod a+x ~/bin/repo
 
     - name: Initialize ROM manifest
+      shell: bash
       run: |
         mkdir -p ~/rom
         cd ~/rom
@@ -40,6 +41,7 @@ jobs:
         PATH: ~/bin:$PATH
 
     - name: Sync ROM source
+      shell: bash
       run: |
         cd ~/rom
         ~/bin/repo sync -c --no-tags --no-clone-bundle -j${{ env.THREADS }}
@@ -47,27 +49,38 @@ jobs:
         PATH: ~/bin:$PATH
 
     - name: Clone Device Tree
+      shell: bash
       run: |
         cd ~/rom
         git clone -b lineage-17.1 https://github.com/whatawurst/android_device_sony_poplar.git device/sony/poplar
 
     - name: Clone Vendor Tree
+      shell: bash
       run: |
         cd ~/rom
         git clone -b lineage-17.1 https://github.com/whatawurst/android_vendor_sony_poplar.git vendor/sony/poplar
 
     - name: Clone Kernel Tree
+      shell: bash
       run: |
         cd ~/rom
         git clone -b lineage-17.1 https://github.com/whatawurst/android_kernel_sony_msm8998.git kernel/sony/msm8998
 
     - name: Set up build environment
+      shell: bash
       run: |
         cd ~/rom
         source build/envsetup.sh
         lunch lineage_poplar-userdebug
 
     - name: Build ROM
+      shell: bash
       run: |
         cd ~/rom
-        make bac
+        make bacon -j${{ env.THREADS }}
+
+    - name: Upload ROM
+      uses: actions/upload-artifact@v2
+      with:
+        name: ROM
+        path: ~/rom/out/target/product/poplar/*.zip
