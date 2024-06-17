@@ -40,7 +40,7 @@ jobs:
     - name: Sync ROM source
       run: |
         cd $HOME/rom
-        $HOME/bin/repo sync -j$(nproc --all) --force-sync --no-tags --no-clone-bundle{{ env.THREADS }}
+        $HOME/bin/repo sync -j$(nproc --all) --force-sync --no-tags
 
     - name: Clone Device Tree
       run: |
