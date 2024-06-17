@@ -35,12 +35,12 @@ jobs:
       run: |
         mkdir -p $HOME/rom
         cd $HOME/rom
-        $HOME/bin/repo init -u git://github.com/Just-CAF/platform_manifest.git -b r
-
+        $HOME/bin/repo init --depth=1 -u https://github.com/Corvus-Q/android_manifest.git -b 10
+        
     - name: Sync ROM source
       run: |
         cd $HOME/rom
-        $HOME/bin/repo sync -c --no-tags --no-clone-bundle -j${{ env.THREADS }}
+        $HOME/bin/repo sync -j$(nproc --all) --force-sync --no-tags --no-clone-bundle{{ env.THREADS }}
 
     - name: Clone Device Tree
       run: |
