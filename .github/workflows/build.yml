@@ -24,7 +24,7 @@ jobs:
     - name: Initialize repo
       run: |
         mkdir -p ~/rom && cd ~/rom
-        repo init -u https://github.com/HorizonDroidLab/manifest.git -b 14 --git-lfs
+        repo init -u https://github.com/HorizonDroidLab/manifest.git -b 14
 
     - name: Sync repository
       run: |
