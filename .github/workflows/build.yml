@@ -24,30 +24,34 @@ jobs:
     - name: Initialize repo
       run: |
         mkdir -p ~/rom && cd ~/rom
-        repo init -u https://github.com/AOSPA/manifest -b pie
-        repo sync -j$(nproc)
+        repo init -u https://github.com/HorizonDroidLab/manifest.git -b 14 --git-lfs
+
+    - name: Sync repository
+      run: |
+        cd ~/rom
+        repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune
 
     - name: Clone device tree
       run: |
         cd ~/rom
-        git clone -b lineage-16.1 https://github.com/whatawurst/android_device_sony_poplar.git device/sony/poplar
+        git clone -b lineage-21 https://github.com/whatawurst/android_device_sony_poplar.git device/sony/poplar
 
     - name: Clone vendor tree
       run: |
         cd ~/rom
-        git clone -b lineage-16.1 https://github.com/whatawurst/android_vendor_sony_poplar.git vendor/sony/poplar
+        git clone -b lineage-21 https://github.com/whatawurst/android_vendor_sony_poplar.git vendor/sony/poplar
 
     - name: Clone kernel tree
       run: |
         cd ~/rom
-        git clone -b lineage-16.1 https://github.com/whatawurst/android_kernel_sony_msm8998.git kernel/sony/msm8998
+        git clone -b lineage-21 https://github.com/whatawurst/android_kernel_sony_msm8998.git kernel/sony/msm8998
 
     - name: Start the build
       run: |
         cd ~/rom
-        source build/envsetup.sh
-        lunch aospa_poplar-userdebug
-        make -j$(nproc) bacon
+        . build/envsetup.sh
+        lunch aosp_poplar-userdebug
+        m bacon
 
     - name: Upload ROM
       uses: actions/upload-artifact@v2
