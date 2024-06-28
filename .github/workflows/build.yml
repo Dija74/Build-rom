@@ -12,7 +12,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      # Set environmental variables like your repository URLs, branch names, etc.
       DEVICE_TREE: https://github.com/whatawurst/android_device_sony_poplar
       DEVICE_BRANCH: lineage-21
       VENDOR_TREE: https://github.com/whatawurst/android_vendor_sony_poplar
@@ -29,6 +28,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 11
+          distribution: 'adopt'
 
       - name: Install dependencies
         run: |
