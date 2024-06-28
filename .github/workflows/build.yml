@@ -30,14 +30,19 @@ jobs:
           java-version: 11
           distribution: 'adopt'
 
-      - name: Install dependencies
+      - name: Install repo tool
         run: |
-          sudo apt-get update
-          sudo apt-get install -y bc bison build-essential curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush schedtool squashfs-tools xsltproc zip zlib1g-dev
+          mkdir -p ~/.bin
+          curl https://storage.googleapis.com/git-repo-downloads/repo > ~/.bin/repo
+          chmod a+x ~/.bin/repo
+          export PATH="${HOME}/.bin:${PATH}"
+
+      - name: Make ROM directory and change to it
+        run: |
+          mkdir -p ~/rom && cd ~/rom
 
       - name: Initialize repo
         run: |
-          mkdir -p ~/rom && cd ~/rom
           repo init -u ${{ env.MANIFEST_URL }} -b ${{ env.DEVICE_BRANCH }}
           repo sync -c -j$(nproc) --force-sync --no-clone-bundle --no-tags
 
