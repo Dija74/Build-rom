@@ -33,7 +33,8 @@ jobs:
           echo "export USE_CCACHE=1" >> ~/.bashrc
           echo "export CCACHE_EXEC=/usr/bin/ccache" >> ~/.bashrc
           source ~/.bashrc
-          repo init -u https://github.com/HorizonDroidLab/manifest.git -b 14 --git-lfs
+          repo init -u https://github.com/HorizonDroidLab/manifest.git -b 14
+          git lfs install 
           git clone https://github.com/whatawurst/android_device_sony_poplar.git device/sony/poplar
           git clone https://github.com/whatawurst/android_kernel_sony_msm8998.git kernel/sony/msm8998
           git clone https://github.com/whatawurst/android_vendor_sony_msm8998.git vendor/sony/msm8998
